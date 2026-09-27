@@ -1,0 +1,182 @@
+[
+  {
+    "experiment_id": "EXP-1790486512-8A57",
+    "timestamp": "2026-09-27 10:51:52",
+    "configuration": {
+      "num_intersections": 4,
+      "scenario": "morning_peak",
+      "threshold": 0.55,
+      "qubit_budget": 6,
+      "qaoa_depth": 1,
+      "shots": 512,
+      "sim_steps": 15,
+      "seed": 42
+    },
+    "results": {
+      "avg_waiting_time_sec": 40.8,
+      "total_queued_veh": 313,
+      "congestion_score": 0.533,
+      "throughput_veh_per_min": 101.4,
+      "selected_nodes": [
+        "B",
+        "C",
+        "A"
+      ],
+      "num_qubits": 6,
+      "circuit_depth": 7,
+      "qubo_objective": -77.8058,
+      "feasibility_rate_pct": 21.6,
+      "execution_time_ms": 216.2
+    }
+  },
+  {
+    "experiment_id": "EXP-1790486717-6943",
+    "timestamp": "2026-09-27 10:55:17",
+    "configuration": {
+      "num_intersections": 4,
+      "scenario": "morning_peak",
+      "threshold": 0.55,
+      "qubit_budget": 6,
+      "qaoa_depth": 1,
+      "shots": 512,
+      "sim_steps": 15,
+      "seed": 42
+    },
+    "results": {
+      "avg_waiting_time_sec": 40.8,
+      "total_queued_veh": 313,
+      "congestion_score": 0.533,
+      "throughput_veh_per_min": 101.4,
+      "selected_nodes": [
+        "B",
+        "C",
+        "A"
+      ],
+      "num_qubits": 6,
+      "circuit_depth": 7,
+      "qubo_objective": -77.8058,
+      "feasibility_rate_pct": 21.6,
+      "execution_time_ms": 230.4
+    }
+  },
+  {
+    "experiment_id": "EXP-1790487721-D2B0",
+    "timestamp": "2026-09-27 11:12:02",
+    "configuration": {
+      "num_intersections": 4,
+      "scenario": "morning_peak",
+      "threshold": 0.55,
+      "qubit_budget": 6,
+      "qaoa_depth": 1,
+      "shots": 512,
+      "sim_steps": 15,
+      "seed": 42
+    },
+    "results": {
+      "avg_waiting_time_sec": 40.8,
+      "total_queued_veh": 313,
+      "congestion_score": 0.533,
+      "throughput_veh_per_min": 101.4,
+      "selected_nodes": [
+        "B",
+        "C",
+        "A"
+      ],
+      "num_qubits": 6,
+      "circuit_depth": 7,
+      "qubo_objective": -77.8058,
+      "feasibility_rate_pct": 21.6,
+      "execution_time_ms": 226.0
+    }
+  },
+  {
+    "experiment_id": "EXP-1790488241-7F6E",
+    "timestamp": "2026-09-27 11:20:42",
+    "configuration": {
+      "num_intersections": 4,
+      "scenario": "morning_peak",
+      "threshold": 0.55,
+      "qubit_budget": 6,
+      "qaoa_depth": 1,
+      "shots": 512,
+      "sim_steps": 15,
+      "seed": 42
+    },
+    "results": {
+      "avg_waiting_time_sec": 40.8,
+      "total_queued_veh": 313,
+      "congestion_score": 0.533,
+      "throughput_veh_per_min": 101.4,
+      "selected_nodes": [
+        "B",
+        "C",
+        "A"
+      ],
+      "num_qubits": 6,
+      "circuit_depth": 7,
+      "qubo_objective": -77.8058,
+      "feasibility_rate_pct": 21.6,
+      "execution_time_ms": 248.6
+    }
+  },
+  {
+    "experiment_id": "EXP-1790489173-A57E",
+    "timestamp": "2026-09-27 11:36:13",
+    "configuration": {
+      "num_intersections": 4,
+      "scenario": "morning_peak",
+      "threshold": 0.55,
+      "qubit_budget": 6,
+      "qaoa_depth": 1,
+      "shots": 512,
+      "sim_steps": 15,
+      "seed": 42
+    },
+    "results": {
+      "avg_waiting_time_sec": 40.8,
+      "total_queued_veh": 313,
+      "congestion_score": 0.533,
+      "throughput_veh_per_min": 101.4,
+      "selected_nodes": [
+        "B",
+        "C",
+        "A"
+      ],
+      "num_qubits": 6,
+      "circuit_depth": 7,
+      "qubo_objective": -77.8058,
+      "feasibility_rate_pct": 21.6,
+      "execution_time_ms": 221.0
+    }
+  },
+  {
+    "experiment_id": "EXP-1790497639-77A1",
+    "timestamp": "2026-09-27 13:57:19",
+    "configuration": {
+      "num_intersections": 4,
+      "scenario": "morning_peak",
+      "threshold": 0.55,
+      "qubit_budget": 6,
+      "qaoa_depth": 1,
+      "shots": 512,
+      "sim_steps": 15,
+      "seed": 42
+    },
+    "results": {
+      "avg_waiting_time_sec": 40.8,
+      "total_queued_veh": 313,
+      "congestion_score": 0.533,
+      "throughput_veh_per_min": 101.4,
+      "selected_nodes": [
+        "B",
+        "C",
+        "A"
+      ],
+      "num_qubits": 6,
+      "circuit_depth": 7,
+      "qubo_objective": -77.8058,
+      "feasibility_rate_pct": 21.6,
+      "execution_time_ms": 91.9
+    }
+  }
+]
