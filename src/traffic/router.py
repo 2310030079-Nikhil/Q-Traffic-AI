@@ -96,6 +96,12 @@ class TrafficRouter:
                 "path_coords": [(orig_g["lat"], orig_g["lon"])],
                 "total_distance_km": 0.0,
                 "total_time_min": 0.0,
+                "total_time_formatted": "0 min (At Destination)",
+                "departure_time_ist": "Immediate",
+                "arrival_time_ist": "Immediate",
+                "free_flow_time_min": 0.0,
+                "delay_time_min": 0.0,
+                "aqsa_savings_sec": 0,
                 "avg_speed_kmh": 0.0,
                 "overall_condition": "Clear Road",
                 "overall_color": "#10b981",
@@ -232,6 +238,20 @@ class TrafficRouter:
         total_time_min = max(0.8, total_time_sec / 60.0)
         avg_speed = (total_dist_km / (total_time_sec / 3600.0)) if total_time_sec > 0 else 30.0
 
+        free_flow_time_min = round(max(0.5, (total_dist_km / 45.0) * 60.0), 1)
+        congestion_delay_min = round(max(0.0, total_time_min - free_flow_time_min), 1)
+        aqsa_savings_sec = int(min(90, max(15, congestion_delay_min * 22.0 + worst_congestion * 25.0)))
+
+        from datetime import datetime, timezone, timedelta
+        now_ist = datetime.now(timezone(timedelta(hours=5, minutes=30)))
+        arrival_dt = now_ist + timedelta(minutes=total_time_min)
+        departure_str = now_ist.strftime("%I:%M:%S %p IST")
+        arrival_str = arrival_dt.strftime("%I:%M %p IST")
+
+        mins_int = int(total_time_min)
+        secs_int = int((total_time_min - mins_int) * 60)
+        time_formatted = f"{mins_int} min {secs_int} sec" if mins_int > 0 else f"{secs_int} sec"
+
         import urllib.parse
         g_maps_directions_url = (
             f"https://www.google.com/maps/dir/?api=1&origin="
@@ -254,6 +274,12 @@ class TrafficRouter:
             "path_coords": path_coords,
             "total_distance_km": round(total_dist_km, 2),
             "total_time_min": round(total_time_min, 1),
+            "total_time_formatted": time_formatted,
+            "departure_time_ist": departure_str,
+            "arrival_time_ist": arrival_str,
+            "free_flow_time_min": free_flow_time_min,
+            "delay_time_min": congestion_delay_min,
+            "aqsa_savings_sec": aqsa_savings_sec,
             "avg_speed_kmh": round(avg_speed, 1),
             "overall_condition": overall_traffic["label"],
             "overall_color": overall_traffic["color"],
@@ -261,3 +287,43 @@ class TrafficRouter:
             "segments": segments,
             "turn_by_turn": turn_by_turn,
         }
+
+    def compute_all_destinations_eta(
+        self,
+        origin: str,
+        traffic_state: Dict[str, Any],
+        origin_geo: Optional[Dict[str, Any]] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Calculates live travel time, distance, ETA, and traffic conditions from origin
+        to every other destination intersection across the active smart city network.
+        """
+        intersections = traffic_state.get("intersections", {})
+        node_ids = list(intersections.keys())
+        destinations_eta = []
+
+        for dest_id in node_ids:
+            if dest_id == origin:
+                continue
+            r = self.compute_route(origin, dest_id, traffic_state, preference="fastest", origin_geo=origin_geo)
+            if r.get("found"):
+                dest_geo = get_city_node_geo(dest_id, self.city_name)
+                destinations_eta.append({
+                    "origin_node": origin,
+                    "destination_node": dest_id,
+                    "destination_name": r["destination_name"],
+                    "formatted_address": r.get("destination_address", ""),
+                    "travel_time_min": r["total_time_min"],
+                    "travel_time_formatted": r.get("total_time_formatted", f"{r['total_time_min']:.1f} min"),
+                    "arrival_time_ist": r.get("arrival_time_ist", ""),
+                    "distance_km": r["total_distance_km"],
+                    "avg_speed_kmh": r["avg_speed_kmh"],
+                    "delay_min": r.get("delay_time_min", 0.0),
+                    "condition": r["overall_condition"],
+                    "color": r["overall_color"],
+                    "icon": r["overall_icon"],
+                    "google_maps_url": r["google_maps_url"],
+                })
+
+        destinations_eta.sort(key=lambda x: x["travel_time_min"])
+        return destinations_eta

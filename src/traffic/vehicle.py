@@ -98,6 +98,26 @@ class Vehicle:
         """Vehicle current speed in km/h."""
         return round(self.speed * 3.6, 1)
 
+    @property
+    def eta_destination_min(self) -> float:
+        """Estimated travel time in minutes to reach destination intersection."""
+        if self.has_arrived:
+            return 0.0
+        rem_dist_m = max(10.0, self.edge_length - self.position_on_edge)
+        eff_speed = max(3.0, self.speed if not self.is_queued else self.target_speed * 0.5)
+        # Add queue delay if stopped
+        q_penalty_sec = self.waiting_time * 0.3 if self.is_queued else 0.0
+        total_sec = (rem_dist_m / eff_speed) + q_penalty_sec
+        return round(total_sec / 60.0, 1)
+
+    @property
+    def eta_formatted(self) -> str:
+        """Human-readable ETA string (e.g. '1m 24s' or '42s')."""
+        sec = max(5, int(self.eta_destination_min * 60))
+        if sec < 60:
+            return f"{sec}s"
+        return f"{sec // 60}m {sec % 60}s"
+
     def advance(self, dt: float, max_speed_mps: float = 15.0) -> float:
         """
         Advance vehicle along current edge based on kinematics.
@@ -146,6 +166,8 @@ class Vehicle:
             "progress_pct": round(self.progress * 100, 1),
             "speed_kmh": self.speed_kmh,
             "waiting_time_s": round(self.waiting_time, 1),
+            "eta_destination": self.eta_formatted,
+            "eta_min": self.eta_destination_min,
             "is_queued": self.is_queued,
             "is_emergency": self.is_emergency,
             "status": self.status_label,

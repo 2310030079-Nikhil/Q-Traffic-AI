@@ -137,3 +137,67 @@ def test_resolve_place_user_text_inputs():
     assert suggs[0]["node_id"] == "A"
     assert "MG Road" in suggs[0]["google_name"]
 
+
+def test_travel_time_eta_metrics():
+    sim = TrafficSimulator(num_intersections=4, scenario="evening_peak", seed=42)
+    for _ in range(3):
+        sim.step()
+    state = sim.get_state()
+    router = TrafficRouter(sim, city_name="Bengaluru Central CBD & Tech Corridor")
+    route = router.compute_route("A", "D", state, preference="fastest")
+
+    assert "total_time_formatted" in route
+    assert "min" in route["total_time_formatted"] or "sec" in route["total_time_formatted"]
+    assert "arrival_time_ist" in route
+    assert "IST" in route["arrival_time_ist"]
+    assert "departure_time_ist" in route
+    assert "IST" in route["departure_time_ist"]
+    assert "free_flow_time_min" in route and route["free_flow_time_min"] > 0
+    assert "delay_time_min" in route and route["delay_time_min"] >= 0
+    assert "aqsa_savings_sec" in route and route["aqsa_savings_sec"] >= 0
+
+
+def test_multi_destination_eta_matrix():
+    sim = TrafficSimulator(num_intersections=4, scenario="normal", seed=42)
+    state = sim.get_state()
+    router = TrafficRouter(sim, city_name="Bengaluru Central CBD & Tech Corridor")
+
+    etas = router.compute_all_destinations_eta("A", state)
+    assert len(etas) == 3  # B, C, D (origin A excluded)
+
+    for item in etas:
+        assert item["origin_node"] == "A"
+        assert item["destination_node"] in ("B", "C", "D")
+        assert "travel_time_min" in item and item["travel_time_min"] > 0
+        assert "travel_time_formatted" in item and ("min" in item["travel_time_formatted"] or "sec" in item["travel_time_formatted"])
+        assert "arrival_time_ist" in item and "IST" in item["arrival_time_ist"]
+        assert "distance_km" in item and item["distance_km"] > 0
+        assert "condition" in item
+
+    # Check sorting order: ascending by travel_time_min
+    for i in range(len(etas) - 1):
+        assert etas[i]["travel_time_min"] <= etas[i + 1]["travel_time_min"]
+
+
+def test_vehicle_eta_properties():
+    from src.traffic.vehicle import Vehicle
+
+    v = Vehicle(
+        id="TEST_01",
+        vehicle_type="Car",
+        origin="A",
+        destination="B",
+        current_edge=("A", "B"),
+        position_on_edge=100.0,
+        speed=10.0,  # 10 m/s = 36 km/h
+        edge_length=300.0,
+    )
+    # Remaining distance: 200m at 10 m/s = 20s = 0.33 min
+    assert 0.3 <= v.eta_destination_min <= 0.4
+    assert "s" in v.eta_formatted or "m" in v.eta_formatted
+
+    d = v.to_dict()
+    assert "eta_destination" in d
+    assert "eta_min" in d
+    assert d["eta_destination"] == v.eta_formatted
+
