@@ -371,13 +371,15 @@ with st.expander("🧭 Live Route Navigation & Travel Time Calculator (Exact Ind
             if all_dest_etas:
                 eta_table = []
                 for d in all_dest_etas:
+                    cond_icon = d.get("condition_icon", d.get("icon", "🟢"))
+                    cond_name = d.get("condition", "CLEAR").upper()
                     eta_table.append({
-                        "Destination Landmark": f"📍 {d['destination_name']}",
-                        "Travel Time (How long to reach)": d["travel_time_formatted"],
-                        "Expected Arrival (IST)": d["arrival_time_ist"],
-                        "Distance": f"{d['distance_km']} km",
-                        "Traffic Status": f"{d['condition_icon']} {d['condition'].upper()}",
-                        "Corridor Speed": f"{d['avg_speed_kmh']} km/h",
+                        "Destination Landmark": f"📍 {d.get('destination_name', 'Destination')}",
+                        "Travel Time (How long to reach)": d.get("travel_time_formatted", f"{d.get('travel_time_min', 0):.1f} min"),
+                        "Expected Arrival (IST)": d.get("arrival_time_ist", "--:--"),
+                        "Distance": f"{d.get('distance_km', 0.0)} km",
+                        "Traffic Status": f"{cond_icon} {cond_name}",
+                        "Corridor Speed": f"{d.get('avg_speed_kmh', 35.0)} km/h",
                     })
                 st.dataframe(pd.DataFrame(eta_table), width="stretch", hide_index=True)
 

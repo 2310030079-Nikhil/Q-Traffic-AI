@@ -322,6 +322,8 @@ class TrafficRouter:
                     "condition": r["overall_condition"],
                     "color": r["overall_color"],
                     "icon": r["overall_icon"],
+                    "condition_icon": r["overall_icon"],
+                    "condition_color": r["overall_color"],
                     "google_maps_url": r["google_maps_url"],
                 })
 
