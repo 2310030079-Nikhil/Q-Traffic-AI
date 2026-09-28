@@ -298,6 +298,109 @@ class TrafficMapVisualizer:
             name="🚦 Signal Intersections",
         ))
 
+        # 4. Draw Discrete Real-Time Tracked Vehicles (GPS markers)
+        tracked_vehs = traffic_state.get("tracked_vehicles", [])
+        if tracked_vehs:
+            amb_lats, amb_lons, amb_texts = [], [], []
+            bus_lats, bus_lons, bus_texts = [], [], []
+            car_lats, car_lons, car_texts, car_colors = [], [], [], []
+
+            for veh in tracked_vehs:
+                v_lat = veh.get("lat", 0.0)
+                v_lon = veh.get("lon", 0.0)
+                if abs(v_lat) < 0.1 or abs(v_lon) < 0.1:
+                    continue
+
+                vid = veh["id"]
+                vtype = veh.get("type", "Car")
+                speed = veh.get("speed_kmh", 40.0)
+                edge_label = veh.get("edge", "")
+                prog = veh.get("progress_pct", 0)
+                wait = veh.get("waiting_time_s", 0)
+                status = veh.get("status", "Cruising")
+                is_q = veh.get("is_queued", False)
+
+                h_text = (
+                    f"<b>{veh.get('icon', '🚗')} {vtype}: {vid}</b><br>"
+                    f"━━━━━━━━━━━━━━━━━━━━━━━━━━<br>"
+                    f"Speed: <b>{speed} km/h</b> ({status})<br>"
+                    f"Road Corridor: <b>{edge_label}</b> ({prog}% traversed)<br>"
+                    f"Queue State: <b>{'🔴 Waiting at Signal' if is_q else '🟢 Moving Free-Flow'}</b><br>"
+                    f"Wait Time: <b>{wait} s</b>"
+                )
+
+                if veh.get("is_emergency", False):
+                    amb_lats.append(v_lat)
+                    amb_lons.append(v_lon)
+                    amb_texts.append(
+                        f"<b>🚨 EMERGENCY VEHICLE: {vid} (AMBULANCE)</b><br>"
+                        f"━━━━━━━━━━━━━━━━━━━━━━━━━━<br>"
+                        f"Speed: <b>{speed} km/h</b> (SIREN ACTIVE)<br>"
+                        f"Corridor: <b>{edge_label}</b><br>"
+                        f"Priority Status: <b>⚡ QUANTUM GREEN-WAVE PREEMPTION</b><br>"
+                        f"Wait Time: <b>{wait} s</b>"
+                    )
+                elif vtype == "Bus":
+                    bus_lats.append(v_lat)
+                    bus_lons.append(v_lon)
+                    bus_texts.append(h_text)
+                else:
+                    car_lats.append(v_lat)
+                    car_lons.append(v_lon)
+                    car_texts.append(h_text)
+                    car_colors.append(veh.get("color", "#00f2fe"))
+
+            # Trace for Passenger Cars, EVs, and Auto-Rickshaws
+            if car_lats:
+                fig.add_trace(ScatterClass(
+                    lat=car_lats,
+                    lon=car_lons,
+                    mode="markers",
+                    marker=dict(
+                        size=10,
+                        color=car_colors,
+                        opacity=0.92,
+                    ),
+                    name="🚗 Live Vehicles",
+                    hoverinfo="text",
+                    hovertext=car_texts,
+                ))
+
+            # Trace for Public Transit Buses
+            if bus_lats:
+                fig.add_trace(ScatterClass(
+                    lat=bus_lats,
+                    lon=bus_lons,
+                    mode="markers",
+                    marker=dict(
+                        size=14,
+                        color="#f59e0b",
+                        opacity=0.95,
+                    ),
+                    name="🚌 City Transit Buses",
+                    hoverinfo="text",
+                    hovertext=bus_texts,
+                ))
+
+            # Trace for Emergency Ambulances (Highlighted with Siren Badge)
+            if amb_lats:
+                fig.add_trace(ScatterClass(
+                    lat=amb_lats,
+                    lon=amb_lons,
+                    mode="markers+text",
+                    marker=dict(
+                        size=20,
+                        color="#ef4444",
+                        opacity=1.0,
+                    ),
+                    text=["🚨 AMB"] * len(amb_lats),
+                    textposition="top center",
+                    textfont=dict(color="#f87171", size=10),
+                    name="🚨 Emergency Priority (Ambulance)",
+                    hoverinfo="text",
+                    hovertext=amb_texts,
+                ))
+
         # Mapbox / Maplibre Layout Configuration
         layout_dict = dict(
             style=map_style,
@@ -389,6 +492,30 @@ class TrafficMapVisualizer:
             marker=dict(size=node_sizes, color=node_colors),
             text=node_texts, hovertext=hover_texts, hoverinfo="text", showlegend=False
         ))
+
+        # Abstract discrete vehicles
+        tracked_vehs = traffic_state.get("tracked_vehicles", [])
+        if tracked_vehs:
+            vx, vy, vcolors, vtexts, vsizes = [], [], [], [], []
+            for v in tracked_vehs:
+                u, w = v.get("from_node", ""), v.get("to_node", "")
+                if u in node_positions and w in node_positions:
+                    p = v.get("progress_pct", 0.0) / 100.0
+                    pu = node_positions[u]
+                    pw = node_positions[w]
+                    vx.append(pu[0] + p * (pw[0] - pu[0]))
+                    vy.append(pu[1] + p * (pw[1] - pu[1]))
+                    vcolors.append(v.get("color", "#00f2fe"))
+                    vsizes.append(14 if v.get("is_emergency") else 9)
+                    vtexts.append(f"{v.get('icon', '🚗')} {v['id']}: {v.get('speed_kmh', 0)} km/h")
+
+            if vx:
+                fig.add_trace(go.Scatter(
+                    x=vx, y=vy, mode="markers",
+                    marker=dict(size=vsizes, color=vcolors, opacity=0.9),
+                    hovertext=vtexts, hoverinfo="text",
+                    name="🚗 Live Vehicles",
+                ))
 
         fig.update_layout(
             paper_bgcolor="#070b14", plot_bgcolor="#070b14",

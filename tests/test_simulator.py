@@ -51,3 +51,41 @@ def test_simulator_apply_plan():
     sig_a = sim.network.signals["A"]
     assert sig_a.green_ns == 38.0
     assert sig_a.green_ew == 18.0
+
+
+def test_tracked_vehicles_and_fleet():
+    sim = TrafficSimulator(num_intersections=4, scenario="morning_peak", seed=42)
+    state = sim.get_state()
+    assert "tracked_vehicles" in state
+    assert len(state["tracked_vehicles"]) > 0
+    first_veh = state["tracked_vehicles"][0]
+    assert "id" in first_veh
+    assert "lat" in first_veh
+    assert "lon" in first_veh
+    assert "speed_kmh" in first_veh
+    assert "type" in first_veh
+
+    fleet = sim.get_fleet_summary()
+    assert fleet["total_tracked"] > 0
+    assert "Car" in fleet["by_type"]
+
+
+def test_emergency_vehicle_dispatch():
+    sim = TrafficSimulator(num_intersections=4, seed=42)
+    amb = sim.spawn_emergency_vehicle()
+    assert amb.is_emergency is True
+    assert amb.vehicle_type == "Ambulance"
+    assert sim.last_emergency_id == amb.id
+    sim.step()
+    state = sim.get_state()
+    assert any(v["is_emergency"] for v in state["tracked_vehicles"])
+
+
+def test_live_traffic_feed_manager():
+    from src.traffic.live_api import LiveTrafficFeedManager
+    feed = LiveTrafficFeedManager.get_autonomous_realtime_feed("Bengaluru Central CBD & Tech Corridor")
+    assert "congestion_index" in feed
+    assert 0.0 <= feed["congestion_index"] <= 1.0
+    assert "timestamp_ist" in feed
+    assert len(feed["arterial_corridors"]) > 0
+

@@ -34,7 +34,7 @@ with c3:
 with c4:
     st.write("")
     st.write("")
-    run_bench = st.button("🚀 Run Live Benchmark Suite", type="primary", use_container_width=True)
+    run_bench = st.button("🚀 Run Live Benchmark Suite", type="primary", width="stretch")
 
 # Cache or run benchmark results
 if run_bench or "benchmark_results" not in st.session_state:
@@ -83,7 +83,7 @@ for algo_name, data in results.items():
         "Qubits": m["number_of_qubits"],
     })
 
-st.dataframe(pd.DataFrame(table_data), use_container_width=True, hide_index=True)
+st.dataframe(pd.DataFrame(table_data), width="stretch", hide_index=True)
 
 st.markdown("---")
 
@@ -93,21 +93,21 @@ ch_col1, ch_col2 = st.columns(2)
 
 with ch_col1:
     fig_wait = ChartVisualizer.plot_algorithm_comparison(results, metric_key="avg_waiting_time_sec")
-    st.plotly_chart(fig_wait, use_container_width=True)
+    st.plotly_chart(fig_wait, width="stretch")
 
 with ch_col2:
     fig_queue = ChartVisualizer.plot_algorithm_comparison(results, metric_key="avg_queue_length_veh")
-    st.plotly_chart(fig_queue, use_container_width=True)
+    st.plotly_chart(fig_queue, width="stretch")
 
 ch_col3, ch_col4 = st.columns(2)
 
 with ch_col3:
     fig_tp = ChartVisualizer.plot_algorithm_comparison(results, metric_key="throughput_veh_per_min")
-    st.plotly_chart(fig_tp, use_container_width=True)
+    st.plotly_chart(fig_tp, width="stretch")
 
 with ch_col4:
     fig_feas = ChartVisualizer.plot_algorithm_comparison(results, metric_key="solution_feasibility_pct")
-    st.plotly_chart(fig_feas, use_container_width=True)
+    st.plotly_chart(fig_feas, width="stretch")
 
 st.markdown("---")
 

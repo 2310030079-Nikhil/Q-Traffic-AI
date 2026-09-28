@@ -121,7 +121,7 @@ elif doc_section == "2. Literature Review & Novelty":
         },
     ])
 
-    st.dataframe(lit_df, use_container_width=True, hide_index=True)
+    st.dataframe(lit_df, width="stretch", hide_index=True)
 
     st.markdown("""
     ### Research Positioning Statement

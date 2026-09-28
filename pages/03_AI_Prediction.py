@@ -62,7 +62,7 @@ with col_plot:
     # Filter sample historical trajectory for node A
     node_df = df[df["intersection_id"] == "A"].head(80).copy()
     fig_forecast = ChartVisualizer.plot_ai_forecast(node_df, target_name=target_choice)
-    st.plotly_chart(fig_forecast, use_container_width=True)
+    st.plotly_chart(fig_forecast, width="stretch")
 
 with col_feat:
     st.subheader("🧬 Feature Importance Ranking")
@@ -70,7 +70,7 @@ with col_feat:
     importances = predictor.get_feature_importances()
     if importances:
         fig_feat = ChartVisualizer.plot_feature_importance(importances)
-        st.plotly_chart(fig_feat, use_container_width=True)
+        st.plotly_chart(fig_feat, width="stretch")
     else:
         st.info("Train the model below to extract feature importances.")
 
@@ -103,7 +103,7 @@ for n_id, data in state["intersections"].items():
         "Prediction Error": f"{error:.1f} veh",
     })
 
-st.dataframe(pd.DataFrame(pred_records), use_container_width=True, hide_index=True)
+st.dataframe(pd.DataFrame(pred_records), width="stretch", hide_index=True)
 
 st.markdown("---")
 
@@ -117,7 +117,7 @@ with st.expander("🛠️ Re-train Traffic Predictor on Custom Settings", expand
     with rc3:
         st.write("")
         st.write("")
-        if st.button("🚀 Re-generate Data & Train Model", type="primary", use_container_width=True):
+        if st.button("🚀 Re-generate Data & Train Model", type="primary", width="stretch"):
             with st.spinner("Generating temporal traffic data and training Random Forest..."):
                 new_df = generate_synthetic_traffic_dataset(num_samples=sample_count, output_path=dataset_path)
                 X, y, f_cols, t_cols = prepare_features_and_targets(new_df)

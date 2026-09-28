@@ -9,7 +9,7 @@
 [![Qiskit](https://img.shields.io/badge/Qiskit-2.0+-6929C4.svg)](https://qiskit.org/)
 [![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-1.4+-F7931E.svg)](https://scikit-learn.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Tests Passing](https://img.shields.io/badge/pytest-15%20passed-brightgreen.svg)]()
+[![Tests Passing](https://img.shields.io/badge/pytest-25%20passed-brightgreen.svg)]()
 
 ### **Think Ahead. Optimize Smarter. Move Faster.**
 
@@ -131,13 +131,19 @@ Q-TrafficAI/
 │   ├── 07_Experiments.py              # Ablation studies (Exp A-E) & CSV log export
 │   └── 08_Research_Methodology.py     # Full thesis report, literature table, proofs
 ├── src/
-│   ├── traffic/                       # Discrete-time simulator, signals, network graph
+│   ├── traffic/                       # Discrete simulator, signals, network graph, vehicle GPS, live APIs
+│   │   ├── simulator.py               # Discrete-time simulator with discrete fleet management
+│   │   ├── vehicle.py                 # Multi-modal discrete vehicle kinematics (Car, Bus, Ambulance, EV)
+│   │   ├── live_api.py                # TomTom & OpenStreetMap real-time traffic feed integration
+│   │   ├── geo_registry.py            # Indian Google Maps registry & GPS coordinate interpolation
+│   │   ├── router.py                  # Shortest path & turn-by-turn routing engine
+│   │   └── signal.py                  # Multi-phase traffic signal controllers
 │   ├── ai/                            # Feature engineering, Random Forest, uncertainty
 │   ├── aqsa/                          # Priority scorer, variable selector, QUBO builder
 │   ├── quantum/                       # Ising mapping, parameterized QAOA, Aer simulator, decoder
 │   ├── classical/                     # Fixed-time, greedy queue-ratio, brute force solvers
 │   ├── evaluation/                    # Performance metrics, benchmark comparator, experiment logs
-│   ├── visualization/                 # Plotly maps, QUBO heatmaps, convergence charts
+│   ├── visualization/                 # Plotly maps with live vehicle GPS, QUBO heatmaps, convergence charts
 │   └── ui_common.py                   # Custom styling, branding, and session state
 ├── data/
 │   ├── traffic.csv                    # 7,200 sample temporal urban traffic dataset

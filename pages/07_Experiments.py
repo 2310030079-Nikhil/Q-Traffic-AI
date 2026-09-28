@@ -39,7 +39,7 @@ with tab_ablation:
     )
 
     fig_ablation = ChartVisualizer.plot_ablation_progression(ablation_data)
-    st.plotly_chart(fig_ablation, use_container_width=True)
+    st.plotly_chart(fig_ablation, width="stretch")
 
     # Detailed Table
     abl_df = pd.DataFrame(ablation_data)
@@ -47,7 +47,7 @@ with tab_ablation:
         "experiment", "ai_prediction", "dynamic_qubo", "variable_selection",
         "adaptive_penalty", "feasibility_decoder", "avg_wait_sec", "feasibility_pct", "description"
     ]
-    st.dataframe(abl_df[cols_to_show], use_container_width=True, hide_index=True)
+    st.dataframe(abl_df[cols_to_show], width="stretch", hide_index=True)
 
     st.markdown("---")
     st.markdown("#### 💡 Ablation Key Insights")
@@ -79,7 +79,7 @@ with tab_custom:
             cfg_steps = st.slider("Simulation Steps", 5, 30, 15)
             cfg_seed = st.number_input("Random Seed", value=42, step=1)
             st.write("")
-            submit_exp = st.form_submit_button("🚀 Run & Log Experiment", type="primary", use_container_width=True)
+            submit_exp = st.form_submit_button("🚀 Run & Log Experiment", type="primary", width="stretch")
 
     if submit_exp:
         exp_config = {
@@ -109,7 +109,7 @@ with tab_logs:
     exp_df = exp_mgr.export_csv()
 
     if not exp_df.empty:
-        st.dataframe(exp_df, use_container_width=True, hide_index=True)
+        st.dataframe(exp_df, width="stretch", hide_index=True)
 
         csv_data = exp_df.to_csv(index=False).encode("utf-8")
         st.download_button(

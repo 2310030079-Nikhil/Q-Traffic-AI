@@ -35,7 +35,7 @@ with st.expander("⚙️ Quantum Simulation Hyperparameters (Qiskit Aer)", expan
     with qc4:
         st.write("")
         st.write("")
-        if st.button("🚀 Re-solve on Quantum Simulator", type="primary", use_container_width=True):
+        if st.button("🚀 Re-solve on Quantum Simulator", type="primary", width="stretch"):
             st.session_state.pipeline.qubit_budget = qubits_val
             st.session_state.pipeline.qaoa_depth = depth_val
             st.session_state.pipeline.shots = shots_val
@@ -60,7 +60,7 @@ with col_q1:
     st.subheader("🔥 Dynamic QUBO Matrix Q (Traffic Delay + Constraints)")
     st.caption("Diagonal = Linear Traffic Delay Rewards | Off-diagonal = Adaptive Conflict Penalties & Arterial Synchronization")
     fig_heat = QuantumPlotVisualizer.plot_qubo_heatmap(qubo)
-    st.plotly_chart(fig_heat, use_container_width=True)
+    st.plotly_chart(fig_heat, width="stretch")
 
 with col_q2:
     st.subheader("📐 QUBO → Ising Hamiltonian Formulation")
@@ -89,7 +89,7 @@ with col_c1:
     st.subheader("📉 QAOA Parameter Optimization (COBYLA)")
     st.caption(f"Optimal (γ, β) Angles: γ={qaoa['optimal_parameters']['gamma']}, β={qaoa['optimal_parameters']['beta']}")
     fig_conv = QuantumPlotVisualizer.plot_convergence_history(qaoa["convergence_history"])
-    st.plotly_chart(fig_conv, use_container_width=True)
+    st.plotly_chart(fig_conv, width="stretch")
 
 with col_c2:
     st.subheader("🔬 Parameterized QAOA Quantum Circuit Architecture")
@@ -108,7 +108,7 @@ fig_dist = QuantumPlotVisualizer.plot_measurement_distribution(
     evaluated_solutions=dec["evaluated_solutions"],
     selected_bitstring=sol["bitstring"],
 )
-st.plotly_chart(fig_dist, use_container_width=True)
+st.plotly_chart(fig_dist, width="stretch")
 
 # Selected Configuration Summary Card
 st.markdown("### 🏆 Feasibility-Aware Optimal Solution")

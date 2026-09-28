@@ -70,7 +70,7 @@ with col_table:
             "Selected for Quantum": "✓ YES (QUANTUM)" if is_sel else "✗ NO (SKIPPED)",
         })
 
-    st.dataframe(pd.DataFrame(table_rows), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(table_rows), width="stretch", hide_index=True)
 
     # Search Space Reduction Badge
     red_pct = selection["reduction_ratio"] * 100.0
@@ -85,7 +85,7 @@ with col_table:
 with col_radar:
     st.subheader("🎯 Priority Factor Radar Profile")
     fig_radar = ChartVisualizer.plot_priority_radar(priorities)
-    st.plotly_chart(fig_radar, use_container_width=True)
+    st.plotly_chart(fig_radar, width="stretch")
 
 st.markdown("---")
 
@@ -126,7 +126,7 @@ for v_name, meta in var_meta.items():
 
 v_left, v_right = st.columns([1.4, 1.0])
 with v_left:
-    st.dataframe(pd.DataFrame(var_rows), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(var_rows), width="stretch", hide_index=True)
 
 with v_right:
     st.markdown("#### 🔍 Selection & Pruning Rationale")
@@ -156,7 +156,7 @@ with sweep_col1:
     budget_idx = budget_options.index(cur_budget) if cur_budget in budget_options else 1
     new_budget = st.selectbox("Quantum Qubit Budget (B)", options=budget_options, index=budget_idx)
 
-    if st.button("Re-evaluate AQSA Selection", type="primary", use_container_width=True):
+    if st.button("Re-evaluate AQSA Selection", type="primary", width="stretch"):
         cur_state = st.session_state.simulator.get_state()
         st.session_state.latest_result = st.session_state.pipeline.run(
             traffic_state=cur_state,
@@ -175,4 +175,4 @@ with sweep_col2:
     exp_mgr = st.session_state.exp_manager
     sweep_df = exp_mgr.run_threshold_sweep(num_intersections=st.session_state.simulator.num_intersections)
     fig_sweep = ChartVisualizer.plot_threshold_sensitivity(sweep_df)
-    st.plotly_chart(fig_sweep, use_container_width=True)
+    st.plotly_chart(fig_sweep, width="stretch")

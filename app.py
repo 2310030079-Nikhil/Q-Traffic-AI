@@ -83,7 +83,7 @@ with left_col:
         {"Component": "Feasibility Decoding", "Technology": "Feasibility-Aware Selection", "Role": "★ Proposed Novelty"},
         {"Component": "Closed-Loop Feedback", "Technology": "Discrete-Time Simulator", "Role": "Simulation Testbed"},
     ])
-    st.dataframe(comp_df, use_container_width=True, hide_index=True)
+    st.dataframe(comp_df, width="stretch", hide_index=True)
 
     st.markdown("---")
     st.subheader("🔁 Closed-Loop AQSA Pipeline Architecture")
@@ -145,7 +145,7 @@ with right_col:
             st.caption(f"Navigate using the sidebar to `pages/{filename}.py`")
 
     st.markdown("---")
-    if st.button("🚀 Run One-Click AQSA Closed-Loop Cycle", use_container_width=True, type="primary"):
+    if st.button("🚀 Run One-Click AQSA Closed-Loop Cycle", width="stretch", type="primary"):
         # Advance simulator and re-run AQSA
         new_state = st.session_state.simulator.step(st.session_state.latest_result["signal_plan"])
         st.session_state.latest_result = st.session_state.pipeline.run(new_state)

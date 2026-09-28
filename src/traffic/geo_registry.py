@@ -590,6 +590,42 @@ def get_city_node_geo(node_id: str, city_name: str = DEFAULT_INDIAN_CITY) -> Dic
         return nodes[node_id]
 
     center_lat, center_lon = preset["city_center"]
+
+    # Handle boundary ingress & egress nodes (e.g. IN_N_A, OUT_S_B)
+    if node_id.startswith("IN_") or node_id.startswith("OUT_"):
+        parts = node_id.split("_")
+        if len(parts) >= 3:
+            kind, direction, target_node = parts[0], parts[1], parts[2]
+            base_geo = nodes.get(target_node)
+            if base_geo:
+                base_lat = base_geo["lat"]
+                base_lon = base_geo["lon"]
+                offset = 0.0035
+                d_lat, d_lon = 0.0, 0.0
+                if direction == "N":
+                    d_lat = offset
+                elif direction == "S":
+                    d_lat = -offset
+                elif direction == "W":
+                    d_lon = -offset
+                elif direction == "E":
+                    d_lon = offset
+
+                kind_label = "Inbound Feeder" if kind == "IN" else "Outbound Corridor"
+                dir_label = {"N": "North", "S": "South", "E": "East", "W": "West"}.get(direction, direction)
+                return {
+                    "name": f"{base_geo['name']} ({dir_label} {kind_label})",
+                    "google_name": f"{base_geo.get('google_name', base_geo['name'])} ({dir_label} {kind_label})",
+                    "formatted_address": f"{dir_label} Approach to {base_geo.get('formatted_address', '')}",
+                    "street_intersection": f"{dir_label} Ingress / Egress at {base_geo.get('street_intersection', '')}",
+                    "landmark": f"{base_geo['name']} Outer Sector",
+                    "google_maps_url": base_geo.get("google_maps_url", "https://maps.google.com"),
+                    "lat": base_lat + d_lat,
+                    "lon": base_lon + d_lon,
+                    "cross_streets": f"{dir_label} Corridor",
+                    "aliases": [node_id.lower()],
+                }
+
     return {
         "name": f"Google Maps Place {node_id}",
         "google_name": f"Google Maps Place {node_id}",

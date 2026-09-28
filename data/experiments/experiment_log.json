@@ -178,5 +178,34 @@
       "feasibility_rate_pct": 21.6,
       "execution_time_ms": 91.9
     }
+  },
+  {
+    "experiment_id": "EXP-1790605317-EA78",
+    "timestamp": "2026-09-28 19:51:57",
+    "configuration": {
+      "num_intersections": 4,
+      "scenario": "morning_peak",
+      "threshold": 0.55,
+      "qubit_budget": 6,
+      "qaoa_depth": 1,
+      "shots": 512,
+      "sim_steps": 15,
+      "seed": 42
+    },
+    "results": {
+      "avg_waiting_time_sec": 16.3,
+      "total_queued_veh": 36,
+      "congestion_score": 0.158,
+      "throughput_veh_per_min": 90.0,
+      "selected_nodes": [
+        "C",
+        "B"
+      ],
+      "num_qubits": 4,
+      "circuit_depth": 4,
+      "qubo_objective": -30.6101,
+      "feasibility_rate_pct": 25.0,
+      "execution_time_ms": 84.0
+    }
   }
 ]
