@@ -44,14 +44,24 @@ class TrafficMapVisualizer:
             )
 
         # Real-World Geographic Map (Google Maps / OpenStreetMap style)
-        return TrafficMapVisualizer._create_geo_figure(
-            traffic_state=traffic_state,
-            selected_set=selected_set,
-            active_route=active_route,
-            map_style=map_style,
-            city_name=city_name,
-            show_all_traffic=show_all_traffic,
-        )
+        try:
+            return TrafficMapVisualizer._create_geo_figure(
+                traffic_state=traffic_state,
+                selected_set=selected_set,
+                active_route=active_route,
+                map_style=map_style,
+                city_name=city_name,
+                show_all_traffic=show_all_traffic,
+            )
+        except Exception as e:
+            import logging
+            logging.warning("Failed to render geographic map, falling back to 2D schematic: %s", e)
+            return TrafficMapVisualizer._create_abstract_figure(
+                traffic_state=traffic_state,
+                selected_set=selected_set,
+                active_route=active_route,
+                node_positions=node_positions,
+            )
 
     @staticmethod
     def _create_geo_figure(
@@ -64,7 +74,11 @@ class TrafficMapVisualizer:
     ) -> go.Figure:
         """Constructs geographic map with real-world street tiles, road lines, and route navigation."""
         fig = go.Figure()
-        ScatterClass = getattr(go, "Scattermap", go.Scattermapbox)
+        # Safe resolution: Plotly >=6.0 removed Scattermapbox in favor of Scattermap,
+        # while Plotly <6.0 only has Scattermapbox. We must not evaluate go.Scattermapbox eagerly.
+        ScatterClass = getattr(go, "Scattermap", None) or getattr(go, "Scattermapbox", None)
+        if ScatterClass is None:
+            raise AttributeError("Neither Scattermap nor Scattermapbox is supported by the installed Plotly version.")
 
         preset = CITY_PRESETS.get(city_name, CITY_PRESETS[DEFAULT_INDIAN_CITY])
         center_lat, center_lon = preset["city_center"]
@@ -426,10 +440,16 @@ class TrafficMapVisualizer:
         )
 
         # Handle Scattermap vs Scattermapbox attribute naming in Plotly
-        if hasattr(fig.layout, "map"):
-            fig.update_layout(map=layout_dict)
+        if ScatterClass is not None and getattr(go, "Scattermap", None) is not None and ScatterClass == go.Scattermap:
+            try:
+                fig.update_layout(map=layout_dict)
+            except Exception:
+                fig.update_layout(mapbox=layout_dict)
         else:
-            fig.update_layout(mapbox=layout_dict)
+            try:
+                fig.update_layout(mapbox=layout_dict)
+            except Exception:
+                fig.update_layout(map=layout_dict)
 
         return fig
 

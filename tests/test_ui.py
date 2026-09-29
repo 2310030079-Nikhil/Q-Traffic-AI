@@ -30,3 +30,24 @@ def test_init_session_state():
     assert "latest_result" in st.session_state
     assert "comparator" in st.session_state
     assert "exp_manager" in st.session_state
+
+
+def test_traffic_map_rendering():
+    from src.traffic.simulator import TrafficSimulator
+    from src.visualization.traffic_map import TrafficMapVisualizer
+
+    sim = TrafficSimulator(num_intersections=4)
+    sim.step()
+    state = sim.get_state()
+
+    # Test real-world geographic map styles
+    for style in ["open-street-map", "carto-darkmatter", "carto-positron"]:
+        fig = TrafficMapVisualizer.create_network_figure(state, map_style=style)
+        assert fig is not None
+        assert len(fig.data) > 0
+
+    # Test 2D abstract schematic
+    fig_abstract = TrafficMapVisualizer.create_network_figure(state, map_style="abstract")
+    assert fig_abstract is not None
+    assert len(fig_abstract.data) > 0
+
